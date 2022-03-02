@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/module/login/login_page.dart';
+import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 
 void main() {
+  Provider.debugCheckInvalidValueType = null;
   runApp(const MyApp());
 }
 
@@ -10,10 +13,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Shall We Talk',
-      home: LoginPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => VTalkProvider()),
+      ],
+      child: const MaterialApp(
+        title: 'Shall We Talk',
+        home: LoginPage(),
+      ),
     );
   }
 }
-
