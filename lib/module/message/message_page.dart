@@ -9,7 +9,7 @@ class MessagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (c) => MessageProvider(),
+      create: (c) => MessageProvider(context),
       child: Scaffold(
         appBar: AppBar(),
         body: Column(
@@ -34,13 +34,17 @@ class MessagePage extends StatelessWidget {
               ),
             ),
             Builder(builder: (context) {
-              return TextField(
-                textInputAction: TextInputAction.send,
-                controller:
-                    context.read<MessageProvider>().textEditingController,
-                onSubmitted: (text) {
-                  context.read<MessageProvider>().sendMessage(text);
-                },
+              var provider = context.read<MessageProvider>();
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 18,
+                ),
+                child: TextField(
+                  textInputAction: TextInputAction.send,
+                  controller: provider.textEditingController,
+                  onSubmitted: provider.sendMessage,
+                ),
               );
             }),
           ],

@@ -12,6 +12,7 @@ class VTalkSocketClient {
   final int _port = 32167;
   Socket? _socket;
   String? _socketId;
+  String? get socketId => _socketId;
 
   final List<ValueChanged<List<String>>> _nicknamesChangeCallback = [];
   final List<ValueChanged<Message>> _messageReceiveCallback = [];
@@ -19,7 +20,6 @@ class VTalkSocketClient {
   VTalkSocketClient._internal();
 
   Future<void> connect() async {
-    print('json==connect');
     _socket = await Socket.connect(
       _address,
       _port,
@@ -41,11 +41,16 @@ class VTalkSocketClient {
     _messageReceiveCallback.add(callback);
   }
 
-  void sendMessage(String message) {
+  Message sendMessage(String message) {
     Map<String, String> data = {
       'message': message,
     };
     _socket?.write(jsonEncode(data) + "\r\n");
+    return Message(
+      id: _socketId,
+      message: message,
+      time: DateTime.now().millisecondsSinceEpoch.toString(),
+    );
   }
 
   void _onMessageReceive(Uint8List uint8list) {
@@ -74,5 +79,12 @@ class VTalkSocketClient {
     for (var element in _messageReceiveCallback) {
       element.call(message);
     }
+  }
+
+  void login(String nickname) {
+    Map<String, String> data = {
+      'nickname': nickname,
+    };
+    _socket?.write(jsonEncode(data) + "\r\n");
   }
 }
