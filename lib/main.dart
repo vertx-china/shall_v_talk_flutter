@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shall_v_talk_flutter/module/login/login_page.dart';
+import 'package:shall_v_talk_flutter/module/message/message_page.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 
 void main() {
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       ],
       child: const MaterialApp(
         title: 'Shall We Talk',
-        home: LoginPage(),
+        home: MessagePage(),
       ),
     );
   }
