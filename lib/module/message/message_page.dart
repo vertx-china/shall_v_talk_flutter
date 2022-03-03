@@ -21,6 +21,7 @@ class MessagePage extends StatelessWidget {
                 builder: (context, messages, child) {
                   return ListView.builder(
                     itemCount: messages.length,
+                    reverse: true,
                     itemBuilder: (context, index) {
                       Message message = messages[index];
                       return ListTile(
@@ -32,6 +33,16 @@ class MessagePage extends StatelessWidget {
                 },
               ),
             ),
+            Builder(builder: (context) {
+              return TextField(
+                textInputAction: TextInputAction.send,
+                controller:
+                    context.read<MessageProvider>().textEditingController,
+                onSubmitted: (text) {
+                  context.read<MessageProvider>().sendMessage(text);
+                },
+              );
+            }),
           ],
         ),
       ),

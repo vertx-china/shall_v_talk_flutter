@@ -15,7 +15,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => VTalkProvider()),
+        ChangeNotifierProvider(
+          lazy: false,
+          create: (context) => VTalkProvider(),
+        ),
       ],
       child: const MaterialApp(
         title: 'Shall We Talk',

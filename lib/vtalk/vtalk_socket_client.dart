@@ -19,6 +19,7 @@ class VTalkSocketClient {
   VTalkSocketClient._internal();
 
   Future<void> connect() async {
+    print('json==connect');
     _socket = await Socket.connect(
       _address,
       _port,
@@ -40,8 +41,16 @@ class VTalkSocketClient {
     _messageReceiveCallback.add(callback);
   }
 
+  void sendMessage(String message) {
+    Map<String, String> data = {
+      'message': message,
+    };
+    _socket?.write(jsonEncode(data) + "\r\n");
+  }
+
   void _onMessageReceive(Uint8List uint8list) {
-    var json = String.fromCharCodes(uint8list);
+    var json = utf8.decode(uint8list);
+    print('json==$json');
     Map<String, dynamic> map = jsonDecode(json);
     if (map['id'] != null && map.length == 1) {
       _socketId = map['id'];
