@@ -4,6 +4,7 @@ class Message {
   String? color;
   String? nickname;
   String? time;
+  late bool isSelf;
 
   Message({
     this.id,
@@ -11,6 +12,7 @@ class Message {
     this.color,
     this.nickname,
     this.time,
+    this.isSelf = false,
   });
 
   Message.fromJson(Map<String, dynamic> json) {

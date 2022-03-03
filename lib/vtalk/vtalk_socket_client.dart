@@ -8,10 +8,9 @@ import 'package:shall_v_talk_flutter/model/message.dart';
 class VTalkSocketClient {
   static late final VTalkSocketClient client = VTalkSocketClient._internal();
 
-  final String _address = '103.145.87.185';
-  final int _port = 32167;
   Socket? _socket;
   String? _socketId;
+
   String? get socketId => _socketId;
 
   final List<ValueChanged<List<String>>> _nicknamesChangeCallback = [];
@@ -19,10 +18,10 @@ class VTalkSocketClient {
 
   VTalkSocketClient._internal();
 
-  Future<void> connect() async {
+  Future<void> connect(String host, int port) async {
     _socket = await Socket.connect(
-      _address,
-      _port,
+      host,
+      port,
       timeout: const Duration(milliseconds: 3000),
     );
     _socket!.listen(_onMessageReceive);
@@ -55,18 +54,21 @@ class VTalkSocketClient {
 
   void _onMessageReceive(Uint8List uint8list) {
     var json = utf8.decode(uint8list);
-    print('json==$json');
-    Map<String, dynamic> map = jsonDecode(json);
-    if (map['id'] != null && map.length == 1) {
-      _socketId = map['id'];
-    } else if (map['nicknames'] != null && map.length == 1) {
-      List<String> nicknames =
-          (map['nicknames'] as List).map((e) => e.toString()).toList();
-      _notifyNicknamesChange(nicknames);
-    } else {
-      var message = Message.fromJson(map);
-      _notifyMessageReceive(message);
+    List<String> messages = json.split("\r\n");
+    for (var element in messages) {
+      Map<String, dynamic> map = jsonDecode(element);
+      if (map['id'] != null && map.length == 1) {
+        _socketId = map['id'];
+      } else if (map['nicknames'] != null && map.length == 1) {
+        List<String> nicknames =
+        (map['nicknames'] as List).map((e) => e.toString()).toList();
+        _notifyNicknamesChange(nicknames);
+      } else {
+        var message = Message.fromJson(map);
+        _notifyMessageReceive(message);
+      }
     }
+
   }
 
   void _notifyNicknamesChange(List<String> nicknames) {

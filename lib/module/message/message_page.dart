@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/module/message/message_provider.dart';
+import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 
 class MessagePage extends StatelessWidget {
   const MessagePage({Key? key}) : super(key: key);
@@ -11,7 +12,11 @@ class MessagePage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (c) => MessageProvider(context),
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          actions: [
+
+          ],
+        ),
         body: Column(
           children: [
             Expanded(
@@ -21,7 +26,6 @@ class MessagePage extends StatelessWidget {
                 builder: (context, messages, child) {
                   return ListView.builder(
                     itemCount: messages.length,
-                    reverse: true,
                     itemBuilder: (context, index) {
                       Message message = messages[index];
                       return ListTile(

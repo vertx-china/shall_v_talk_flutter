@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:shall_v_talk_flutter/module/message/message_page.dart';
-import 'package:shall_v_talk_flutter/user/user_provider.dart';
+import 'package:shall_v_talk_flutter/module/login/login_page.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 
 void main() {
@@ -22,6 +21,9 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
+      theme: ThemeData(
+        primaryColor: const Color(0xFF782a91)
+      ),
       home: Builder(
         builder: (context) {
           return MultiProvider(
@@ -30,11 +32,8 @@ class MyApp extends StatelessWidget {
                 lazy: false,
                 create: (context) => VTalkProvider(),
               ),
-              ChangeNotifierProvider(
-                create: (context) => UserProvider(context),
-              ),
             ],
-            child: const MessagePage(),
+            child: const LoginPage(),
           );
         }
       ),
