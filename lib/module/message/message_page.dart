@@ -27,7 +27,8 @@ class MessagePage extends StatelessWidget {
                   return ListView.separated(
                     itemCount: messages.length,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
+                      horizontal: 24,
+                      vertical: 16,
                     ),
                     itemBuilder: (context, index) {
                       Message message = messages[index];
@@ -44,16 +45,62 @@ class MessagePage extends StatelessWidget {
               var provider = context.read<MessageProvider>();
               return Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 18,
+                  horizontal: 12,
+                  vertical: 6,
                 ),
-                child: TextField(
-                  textInputAction: TextInputAction.send,
-                  controller: provider.textEditingController,
-                  onSubmitted: provider.sendMessage,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: const ShapeDecoration(
+                          color: Colors.white,
+                          shape: StadiumBorder(),
+                        ),
+                        child: TextField(
+                          textInputAction: TextInputAction.send,
+                          controller: provider.textEditingController,
+                          onSubmitted: provider.sendMessage,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                            )
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    GestureDetector(
+                      onTap: (){
+                        var message = provider.textEditingController.text;
+                        provider.sendMessage(message);
+                      },
+                      child: Container(
+                        decoration: ShapeDecoration(
+                          color: Theme.of(context).primaryColor,
+                          shape: const StadiumBorder(),
+                        ),
+
+                        child: const Center(
+                          child: Text(
+                            '发送',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        height: 45,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               );
-            }),
+            },),
           ],
         ),
       ),

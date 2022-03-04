@@ -1,6 +1,6 @@
 class Message {
   String? id;
-  String? message;
+  dynamic message;
   String? color;
   String? nickname;
   String? time;

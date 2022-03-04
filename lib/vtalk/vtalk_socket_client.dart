@@ -45,6 +45,7 @@ class VTalkSocketClient {
     _messageReceiveCallback.add(callback);
   }
 
+  //URL:http://img.clinicmed.net/uploadimg/image/20200922/16007768895f69eab9668ef3.93733559.png
   Message sendMessage(String message) {
     Map<String, String> data = {
       'message': message,
