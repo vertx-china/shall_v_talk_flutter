@@ -8,6 +8,7 @@ import 'package:shall_v_talk_flutter/vtalk/vtalk_socket_client.dart';
 class MessageProvider extends BaseChangeNotifier {
   final TextEditingController textEditingController = TextEditingController();
   final List<Message> messages = [];
+ // List<Message> get messages => _messages.reversed.toList();
   final BuildContext context;
 
   MessageProvider(this.context) {

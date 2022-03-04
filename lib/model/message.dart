@@ -4,7 +4,7 @@ class Message {
   String? color;
   String? nickname;
   String? time;
-  late bool isSelf;
+  late bool isLocal;
 
   Message({
     this.id,
@@ -12,7 +12,7 @@ class Message {
     this.color,
     this.nickname,
     this.time,
-    this.isSelf = false,
+    this.isLocal = false,
   });
 
   Message.fromJson(Map<String, dynamic> json) {
@@ -21,6 +21,7 @@ class Message {
     nickname = json['nickname'];
     id = json['id'];
     time = json['time'];
+    isLocal = false;
   }
 
   Map<String, dynamic> toJson() {
@@ -32,4 +33,6 @@ class Message {
     data['time'] = time;
     return data;
   }
+
+  bool isSelf() => isLocal;
 }

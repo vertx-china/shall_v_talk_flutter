@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
+import 'package:shall_v_talk_flutter/module/message/message_item.dart';
 import 'package:shall_v_talk_flutter/module/message/message_provider.dart';
-import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 
 class MessagePage extends StatelessWidget {
   const MessagePage({Key? key}) : super(key: key);
@@ -24,14 +24,17 @@ class MessagePage extends StatelessWidget {
                 selector: (_, provider) => provider.messages,
                 shouldRebuild: (pre, curr) => true,
                 builder: (context, messages, child) {
-                  return ListView.builder(
+                  return ListView.separated(
                     itemCount: messages.length,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
                     itemBuilder: (context, index) {
                       Message message = messages[index];
-                      return ListTile(
-                        title: Text(message.nickname!),
-                        subtitle: Text(message.message!),
-                      );
+                      return MessageItem(message: message);
+                    },
+                    separatorBuilder: (context, index) {
+                      return const SizedBox(height: 16);
                     },
                   );
                 },

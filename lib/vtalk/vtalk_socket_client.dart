@@ -54,6 +54,7 @@ class VTalkSocketClient {
       id: _socketId,
       message: message,
       time: DateTime.now().millisecondsSinceEpoch.toString(),
+      isLocal: true,
     );
   }
 
