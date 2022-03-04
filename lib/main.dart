@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/module/login/login_page.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 
@@ -14,28 +14,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Shall We Talk',
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          lazy: false,
+          create: (context) => VTalkProvider(),
+        ),
       ],
-      theme: ThemeData(
-        primaryColor: const Color(0xFF782a91)
-      ),
-      home: Builder(
-        builder: (context) {
-          return MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                lazy: false,
-                create: (context) => VTalkProvider(),
-              ),
-            ],
-            child: const LoginPage(),
-          );
-        }
+      child: MaterialApp(
+        title: 'Shall We Talk',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        theme: ThemeData(primaryColor: const Color(0xFF782a91)),
+        home: const LoginPage(),
       ),
     );
   }
