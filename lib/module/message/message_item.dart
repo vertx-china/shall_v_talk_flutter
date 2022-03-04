@@ -68,7 +68,18 @@ class _MessageContent extends StatelessWidget {
     Widget child;
     if (message is String && (message as String).isPhotoUrl()) {
       child = _ImageUrlContent(url: message);
-    } else {
+    } else if(message is Map){
+      String type = message['type']?.toString() ?? '0';
+      //只支持url
+      if(type == 'img' && message['img'] != null){
+        child = _ImageUrlContent(url: message['img']);
+      }else if(type == 'link'){
+        //Todo
+        child = _TextContent(text: message?.toString() ?? '');
+      }else{
+        child = _TextContent(text: message?.toString() ?? '');
+      }
+    }else {
       child = _TextContent(text: message?.toString() ?? '');
     }
     return Container(
