@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/extension/stringx.dart';
@@ -87,9 +85,11 @@ class _MessageContent extends StatelessWidget {
         maxWidth: MediaQuery.of(context).size.width * 0.7,
       ),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(6),
-          bottomRight: Radius.circular(6),
+        borderRadius: BorderRadius.only(
+          topLeft:  Radius.circular(isLocal ? 6 : 2),
+          topRight: Radius.circular(isLocal ? 2 : 6),
+          bottomLeft: const Radius.circular(6),
+          bottomRight: const Radius.circular(6),
         ),
         color: (isLocal ? Colors.blue : Colors.green).withAlpha(128),
       ),
