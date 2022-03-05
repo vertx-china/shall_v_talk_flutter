@@ -7,4 +7,9 @@ extension StringX on String {
             lower.endsWith('gif') ||
             lower.endsWith('jpg'));
   }
+
+  bool isUrl() {
+    var lower = toLowerCase();
+    return lower.startsWith('http');
+  }
 }

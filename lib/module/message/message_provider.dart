@@ -20,7 +20,7 @@ class MessageProvider extends BaseChangeNotifier {
   }
 
   void _onMessageReceive(Message message) {
-    messages.add(message);
+    messages.insert(0 , message);
     notifyListeners();
   }
 
@@ -31,7 +31,7 @@ class MessageProvider extends BaseChangeNotifier {
     textEditingController.clear();
     Message data = VTalkSocketClient.client.sendMessage(message);
     data.nickname = nickname;
-    messages.add(data);
+    messages.insert(0, data);
     notifyListeners();
   }
 }

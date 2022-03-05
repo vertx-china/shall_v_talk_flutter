@@ -23,6 +23,7 @@ class MessagePage extends StatelessWidget {
                 shouldRebuild: (pre, curr) => true,
                 builder: (context, messages, child) {
                   return ListView.separated(
+                    reverse: true,
                     controller:
                         context.read<MessageProvider>().scrollController,
                     itemCount: messages.length,
@@ -110,14 +111,14 @@ class MessagePage extends StatelessWidget {
                             shape: StadiumBorder(),
                           ),
                           child: TextField(
-                            textInputAction: TextInputAction.send,
                             controller: provider.textEditingController,
-                            onSubmitted: provider.sendMessage,
+                            maxLines: 3,
                             decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                )),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                            ),
                           ),
                         ),
                       ),

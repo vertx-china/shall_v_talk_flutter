@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/extension/stringx.dart';
+import 'package:shall_v_talk_flutter/module/message/picture_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MessageItem extends StatelessWidget {
   final Message message;
@@ -29,6 +31,7 @@ class MessageItem extends StatelessWidget {
           const SizedBox(
             height: 4,
           ),
+          //服务端是这么定的。。。实际上message应该不太可能包含多个消息
           message.message is List
               ? Column(
                   mainAxisSize: MainAxisSize.min,
@@ -66,18 +69,17 @@ class _MessageContent extends StatelessWidget {
     Widget child;
     if (message is String && (message as String).isPhotoUrl()) {
       child = _ImageUrlContent(url: message);
-    } else if(message is Map){
+    } else if (message is Map) {
       String type = message['type']?.toString() ?? '0';
       //只支持url
-      if(type == 'img' && message['img'] != null){
+      if (type == 'img' && message['img'] != null) {
         child = _ImageUrlContent(url: message['img']);
-      }else if(type == 'link'){
-        //Todo
-        child = _TextContent(text: message?.toString() ?? '');
-      }else{
+      } else if (type == 'link') {
+        child = _TextContent(text: message['url']?.toString() ?? '');
+      } else {
         child = _TextContent(text: message?.toString() ?? '');
       }
-    }else {
+    } else {
       child = _TextContent(text: message?.toString() ?? '');
     }
     return Container(
@@ -86,12 +88,12 @@ class _MessageContent extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
-          topLeft:  Radius.circular(isLocal ? 6 : 2),
+          topLeft: Radius.circular(isLocal ? 6 : 2),
           topRight: Radius.circular(isLocal ? 2 : 6),
           bottomLeft: const Radius.circular(6),
           bottomRight: const Radius.circular(6),
         ),
-        color: (isLocal ? Colors.blue : Colors.green).withAlpha(128),
+        color: (isLocal ? Colors.blue : Colors.green).withAlpha(80),
       ),
       child: child,
     );
@@ -108,19 +110,29 @@ class _TextContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    var child = Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 8,
         horizontal: 12,
       ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
+      child: GestureDetector(
+        onTap: () {
+          if (text.isUrl()) {
+            launch(text);
+          }
+        },
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            color: text.isUrl() ? Colors.blue : Colors.black,
+            decoration: text.isUrl() ? TextDecoration.underline : null,
+          ),
         ),
       ),
     );
+
+    return child;
   }
 }
 
@@ -139,15 +151,24 @@ class _ImageUrlContent extends StatelessWidget {
         vertical: 6,
         horizontal: 6,
       ),
-      child: Container(
-        constraints: BoxConstraints(
-          maxHeight: 200,
-          maxWidth: MediaQuery.of(context).size.width * 0.7,
-        ),
-        child: Image.network(
-          url,
-          alignment: Alignment.topCenter,
-          cacheWidth: (MediaQuery.of(context).size.width * 0.7).toInt(),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (c) => PicturePage(url: url),
+            ),
+          );
+        },
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: 200,
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+          ),
+          child: Image.network(
+            url,
+            alignment: Alignment.topCenter,
+            cacheWidth: (MediaQuery.of(context).size.width * 0.7).toInt(),
+          ),
         ),
       ),
     );
