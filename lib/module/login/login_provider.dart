@@ -23,6 +23,7 @@ class LoginProvider extends BaseChangeNotifier {
       String host = internetAddress[0];
       String port = internetAddress[1];
       String nickname = nicknameController.text;
+
       if (host.isEmpty || port.isEmpty || nickname.isEmpty) {
         return;
       }

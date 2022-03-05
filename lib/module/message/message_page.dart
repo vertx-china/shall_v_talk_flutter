@@ -25,6 +25,7 @@ class MessagePage extends StatelessWidget {
                 shouldRebuild: (pre, curr) => true,
                 builder: (context, messages, child) {
                   return ListView.separated(
+                    controller: context.read<MessageProvider>().scrollController,
                     itemCount: messages.length,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,

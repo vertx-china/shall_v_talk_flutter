@@ -7,8 +7,8 @@ import 'package:shall_v_talk_flutter/vtalk/vtalk_socket_client.dart';
 
 class MessageProvider extends BaseChangeNotifier {
   final TextEditingController textEditingController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
   final List<Message> messages = [];
- // List<Message> get messages => _messages.reversed.toList();
   final BuildContext context;
 
   MessageProvider(this.context) {
@@ -25,6 +25,7 @@ class MessageProvider extends BaseChangeNotifier {
   }
 
   Future<void> sendMessage(String message) async {
+    scrollController.jumpTo(0.0);
     var vTalkProvider = context.read<VTalkProvider>();
     var nickname = vTalkProvider.nickname;
     textEditingController.clear();
