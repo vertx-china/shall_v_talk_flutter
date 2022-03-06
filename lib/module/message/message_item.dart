@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
-import 'package:shall_v_talk_flutter/extension/stringx.dart';
+import 'package:shall_v_talk_flutter/extension/extension_index.dart';
 import 'package:shall_v_talk_flutter/module/message/picture_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -84,7 +84,7 @@ class _MessageContent extends StatelessWidget {
     }
     return Container(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.7,
+        maxWidth: 0.7.widthPercent(context),
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
@@ -162,12 +162,12 @@ class _ImageUrlContent extends StatelessWidget {
         child: Container(
           constraints: BoxConstraints(
             maxHeight: 200,
-            maxWidth: MediaQuery.of(context).size.width * 0.7,
+            maxWidth: 0.7.widthPercent(context),
           ),
           child: Image.network(
             url,
             alignment: Alignment.topCenter,
-            cacheWidth: (MediaQuery.of(context).size.width * 0.7).toInt(),
+            cacheWidth: 0.7.widthPercent(context).toInt(),
           ),
         ),
       ),

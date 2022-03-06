@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
+import 'package:date_format/date_format.dart';
 
 class VTalkSocketClient {
   static late final VTalkSocketClient client = VTalkSocketClient._internal();
@@ -45,16 +46,36 @@ class VTalkSocketClient {
     _messageReceiveCallback.add(callback);
   }
 
-  //URL:http://img.clinicmed.net/uploadimg/image/20200922/16007768895f69eab9668ef3.93733559.png
+  void _write(String data) {
+    _socket?.write(data + "\r\n");
+  }
+
   Message sendMessage(String message) {
     Map<String, String> data = {
       'message': message,
     };
-    _socket?.write(jsonEncode(data) + "\r\n");
+    _write(jsonEncode(data));
+
+    var now = DateTime.now();
     return Message(
       id: _socketId,
       message: message,
-      time: DateTime.now().millisecondsSinceEpoch.toString(),
+      timestamp: now.millisecondsSinceEpoch,
+      time: formatDate(now, [
+        'yyyy',
+        '-',
+        'mm',
+        '-',
+        'dd',
+        ' ',
+        'hh',
+        ':',
+        'nn',
+        ':',
+        'ss',
+        ' ',
+        'z'
+      ]),
       isLocal: true,
     );
   }
@@ -71,15 +92,13 @@ class VTalkSocketClient {
           _socketId = map['id'];
         } else if (map['nicknames'] != null && map.length == 1) {
           List<String> nicknames =
-          (map['nicknames'] as List).map((e) => e.toString()).toList();
+              (map['nicknames'] as List).map((e) => e.toString()).toList();
           _notifyNicknamesChange(nicknames);
         } else {
           var message = Message.fromJson(map);
           _notifyMessageReceive(message);
         }
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
   }
 
@@ -103,6 +122,6 @@ class VTalkSocketClient {
     Map<String, String> data = {
       'nickname': nickname,
     };
-    _socket?.write(jsonEncode(data) + "\r\n");
+    _write(jsonEncode(data));
   }
 }

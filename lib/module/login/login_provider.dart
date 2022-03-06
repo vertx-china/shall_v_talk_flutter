@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shall_v_talk_flutter/base/application.dart';
 import 'package:shall_v_talk_flutter/base/base_change_notifier.dart';
+import 'package:shall_v_talk_flutter/base/routes/routes.dart';
 import 'package:shall_v_talk_flutter/module/message/message_page.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_socket_client.dart';
@@ -29,11 +32,10 @@ class LoginProvider extends BaseChangeNotifier {
       }
       var vTalk = context.read<VTalkProvider>();
       await vTalk.connect(host, port, nickname);
-      //TODO 使用第三方路由？
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const MessagePage(),
-        ),
+      Application.router.navigateTo(
+        context,
+        Routes.messagePage,
+        transition: TransitionType.inFromRight,
       );
     } on SocketException catch (e, s) {
       print('链接失败，e=$e');

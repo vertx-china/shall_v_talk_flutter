@@ -4,6 +4,7 @@ class Message {
   String? color;
   String? nickname;
   String? time;
+  int? timestamp;
   late bool isLocal;
 
   Message({
@@ -12,6 +13,7 @@ class Message {
     this.color,
     this.nickname,
     this.time,
+    this.timestamp,
     this.isLocal = false,
   });
 
@@ -21,6 +23,7 @@ class Message {
     nickname = json['nickname'];
     id = json['id'];
     time = json['time'];
+    timestamp = json['timestamp'];
     isLocal = false;
   }
 
@@ -31,6 +34,7 @@ class Message {
     data['nickname'] = nickname;
     data['id'] = id;
     data['time'] = time;
+    data['timestamp'] = timestamp;
     return data;
   }
 
