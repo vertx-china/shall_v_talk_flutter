@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:date_format/date_format.dart';
@@ -11,26 +13,85 @@ class VTalkSocketClient {
 
   Socket? _socket;
   String? _socketId;
-  bool connecting = false;
+  String nickname = '';
+  String? host;
+  int? port;
+
+  Timer? timer;
+  int commandTime = 15;
+  bool connected = false;
+
+  void _updateConnectState(bool connected){
+    this.connected = connected;
+    print('connected==$connected');
+    _notifyConnectStateChange(connected);
+  }
 
   String? get socketId => _socketId;
 
   final List<ValueChanged<List<String>>> _nicknamesChangeCallback = [];
   final List<ValueChanged<Message>> _messageReceiveCallback = [];
+  final List<ValueChanged<bool>> _connectStateChangeCallback = [];
 
   VTalkSocketClient._internal();
 
+  bool isConnecting = false;
   Future<void> connect(String host, int port) async {
+    if(isConnecting){
+      return;
+    }
+    isConnecting = true;
+    this.host = host;
+    this.port = port;
     _socket = await Socket.connect(
       host,
       port,
       timeout: const Duration(milliseconds: 3000),
     );
-    connecting = true;
-    _socket!.listen(
-      _onMessageReceive,
-      onDone: _onConnectDone,
+    _updateConnectState(true);
+    _socket!.listen(_onMessageReceive, onDone: _onConnectDone);
+    isConnecting = false;
+  }
+
+  void reconnect() {
+    int count = 0;
+    const period = Duration(seconds: 1);
+    Timer.periodic(
+      period,
+      (timer) {
+        _socketId = null;
+        _socket = null;
+        count++;
+        if (count >= 3) {
+          connect(host!, port!);
+
+          timer.cancel();
+          count = 0;
+        }
+      },
     );
+  }
+
+  void _heartBeat() {
+    var duration = const Duration(seconds: 1);
+    timer = Timer.periodic(duration, (Timer timer) async {
+      var result = await Connectivity().checkConnectivity();
+      if (result != ConnectivityResult.mobile &&
+          result != ConnectivityResult.wifi) {
+
+        _updateConnectState(false);
+        timer.cancel();
+      } else {
+        _updateConnectState(true);
+      }
+
+      if (commandTime < 1) {
+        commandTime = 15;
+        _write('');
+      } else {
+        commandTime--;
+      }
+    });
   }
 
   void dispose() {
@@ -44,6 +105,10 @@ class VTalkSocketClient {
 
   void addMessageReceiveCallback(ValueChanged<Message> callback) {
     _messageReceiveCallback.add(callback);
+  }
+  void addConnectStateChangeCallback(ValueChanged<bool> callback) {
+    _connectStateChangeCallback.add(callback);
+    callback.call(connected);
   }
 
   void _write(String data) {
@@ -90,6 +155,7 @@ class VTalkSocketClient {
         Map<String, dynamic> map = jsonDecode(element);
         if (map['id'] != null && map.length == 1) {
           _socketId = map['id'];
+          //_heartBeat();
         } else if (map['nicknames'] != null && map.length == 1) {
           List<String> nicknames =
               (map['nicknames'] as List).map((e) => e.toString()).toList();
@@ -103,7 +169,9 @@ class VTalkSocketClient {
   }
 
   void _onConnectDone() {
-    connecting = false;
+    print('_onConnectDone');
+    _updateConnectState(false);
+    reconnect();
   }
 
   void _notifyNicknamesChange(List<String> nicknames) {
@@ -117,8 +185,14 @@ class VTalkSocketClient {
       element.call(message);
     }
   }
+  void _notifyConnectStateChange(bool connectState) {
+    for (var element in _connectStateChangeCallback) {
+      element.call(connectState);
+    }
+  }
 
   void login(String nickname) {
+    this.nickname = nickname;
     Map<String, String> data = {
       'nickname': nickname,
     };

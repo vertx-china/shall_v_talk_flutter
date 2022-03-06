@@ -26,7 +26,7 @@ class LoginProvider extends BaseChangeNotifier {
       String host = internetAddress[0];
       String port = internetAddress[1];
       String nickname = nicknameController.text;
-
+      print('host=$host, port=$port, ');
       if (host.isEmpty || port.isEmpty || nickname.isEmpty) {
         return;
       }
@@ -35,12 +35,15 @@ class LoginProvider extends BaseChangeNotifier {
       Application.router.navigateTo(
         context,
         Routes.messagePage,
+        clearStack: true,
         transition: TransitionType.inFromRight,
       );
     } on SocketException catch (e, s) {
       print('链接失败，e=$e');
-    } catch (e) {
+    } catch (e , s) {
       //
+
+      print('链接失败，e=$s');
     }
   }
 }

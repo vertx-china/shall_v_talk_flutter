@@ -10,6 +10,12 @@ class MessageProvider extends BaseChangeNotifier {
   final ScrollController scrollController = ScrollController();
   final List<Message> messages = [];
   final BuildContext context;
+  bool connected = false;
+
+  final List<IconData> extendPanel = [
+    Icons.emoji_emotions_rounded,
+  ];
+  int displayPanelIndex = -1;
 
   MessageProvider(this.context) {
     _initCallback();
