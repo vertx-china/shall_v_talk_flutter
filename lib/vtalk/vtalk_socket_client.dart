@@ -39,7 +39,7 @@ class VTalkSocketClient {
   bool isConnecting = false;
   Future<bool> connect(String host, int port) async {
     if(isConnecting){
-      return;
+      return false;
     }
     isConnecting = true;
     this.host = host;
@@ -50,8 +50,9 @@ class VTalkSocketClient {
       timeout: const Duration(milliseconds: 3000),
     );
     _updateConnectState(true);
-    _socket!.listen(_onMessageReceive, onDone: _onConnectDone);
+    _socket?.listen(_onMessageReceive, onDone: _onConnectDone);
     isConnecting = false;
+    return _socket != null;
   }
 
   void reconnect() {
@@ -65,14 +66,11 @@ class VTalkSocketClient {
         count++;
         if (count >= 3) {
           connect(host!, port!);
-
           timer.cancel();
           count = 0;
         }
       },
     );
-    connecting = true;
-    return connecting;
   }
 
   void _heartBeat() {
