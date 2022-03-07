@@ -41,10 +41,12 @@ dependencies:
   flutter_svg: ^1.0.3
   url_launcher: ^6.0.20
   photo_view: ^0.13.0
+  motion_toast: ^2.1.2
   date_format: ^2.0.5
   fluro: ^2.0.3
   connectivity_plus: ^2.2.1
   emojis: ^0.9.9
+  flutter_screenutil: ^5.3.1
 
 
 dev_dependencies:

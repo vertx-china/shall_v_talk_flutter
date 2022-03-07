@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -36,7 +37,7 @@ class VTalkSocketClient {
   VTalkSocketClient._internal();
 
   bool isConnecting = false;
-  Future<void> connect(String host, int port) async {
+  Future<bool> connect(String host, int port) async {
     if(isConnecting){
       return;
     }
@@ -70,6 +71,8 @@ class VTalkSocketClient {
         }
       },
     );
+    connecting = true;
+    return connecting;
   }
 
   void _heartBeat() {
