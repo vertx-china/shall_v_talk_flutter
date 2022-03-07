@@ -58,7 +58,7 @@ class LoginProvider extends BaseChangeNotifier {
       }
     } on SocketException catch (e, s) {
       print("链接失败，e=$e");
-    } catch (e) {
+    } catch (e, s) {
       //
 
       print('链接失败，e=$s');

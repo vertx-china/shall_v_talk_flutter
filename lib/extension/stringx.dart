@@ -1,6 +1,6 @@
 extension StringX on String {
   bool isPhotoUrl() {
-    var lower = toLowerCase();
+    var lower = toLowerCase().trim();
     return lower.startsWith('http') &&
         (lower.endsWith('jpeg') ||
             lower.endsWith('png') ||
@@ -9,7 +9,7 @@ extension StringX on String {
   }
 
   bool isUrl() {
-    var lower = toLowerCase();
+    var lower = toLowerCase().trim();
     return lower.startsWith('http');
   }
 }
