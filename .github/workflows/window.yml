@@ -16,11 +16,6 @@ jobs:
     steps:
       # 拉取项目代码
       - uses: actions/checkout@v2
-      # 建立 java 环境
-      - name: Setup Java JDK
-        uses: actions/setup-java@v1.3.0
-        with:
-          java-version: "12.x"
       # 建立 Flutter 环境
       - name: Flutter action
         uses: subosito/flutter-action@v1.1.1
