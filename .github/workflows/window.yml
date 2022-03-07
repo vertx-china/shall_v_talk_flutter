@@ -1,0 +1,22 @@
+# window.yml
+
+# 工作流程的名字
+name: Test, Build and Release apk
+
+# 工作流程触发的时机，这里是当一个版本标签推送到仓库时触发
+on:
+  push:
+    tags:
+      - v*
+
+# 这个工作流程需要执行的任务
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - run: flutter --version
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter build windows
