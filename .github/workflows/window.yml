@@ -21,6 +21,5 @@ jobs:
         uses: subosito/flutter-action@v1.1.1
         with:
           channel: "stable"
-          flutter-version: "1.12.x"
       - run: flutter pub get
       - run: flutter build windows
