@@ -1,7 +1,7 @@
 # window.yml
 
 # 工作流程的名字
-name: Test, Build and Release apk
+name: Build Window Product
 
 # 工作流程触发的时机，这里是当一个版本标签推送到仓库时触发
 on:
@@ -20,3 +20,7 @@ jobs:
           flutter-version: '2.10.x'
           channel: 'stable'
       - run: flutter build windows
+      - uses: ncipollo/release-action@v2
+        with:
+          artifacts: "build/windows/runner/Release/"
+          token: ${{!secrets!}}
