@@ -20,7 +20,9 @@ jobs:
           flutter-version: '2.10.x'
           channel: 'stable'
       - run: flutter build windows
-      - uses: ncipollo/release-action@v2
+      - run: tar -cvzf archive.tar "build/windows/runner/Release"
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.3.1
         with:
-          artifacts: "build/windows/runner/Release/"
-          token: ${{!secrets!}}
+          name: upload-window_product
+          path: ${{github.workspace}}/build/windows/runner/archive.tar
