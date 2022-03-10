@@ -25,4 +25,4 @@ jobs:
         uses: actions/upload-artifact@v2.3.1
         with:
           name: upload-window_product
-          path: /build/windows/runner/archive.tar
+          path: archive.tar
