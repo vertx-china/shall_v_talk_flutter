@@ -6,6 +6,7 @@ import 'package:shall_v_talk_flutter/base/base_change_notifier.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_socket_client.dart';
+import 'package:shall_v_talk_flutter/vtalk/vtalk_websocket_client.dart';
 
 class MessageProvider extends BaseChangeNotifier {
   final TextEditingController textEditingController = TextEditingController();
@@ -24,8 +25,8 @@ class MessageProvider extends BaseChangeNotifier {
   }
 
   void _initCallback() {
-    VTalkSocketClient.client.addMessageReceiveCallback(_onMessageReceive);
-    VTalkSocketClient.client.addConnectStateChangeCallback(_onConnectStateChange);
+    VTalkWebSocket.client.addMessageReceiveCallback(_onMessageReceive);
+    VTalkWebSocket.client.addConnectStateChangeCallback(_onConnectStateChange);
   }
 
   void _onMessageReceive(Message message) {
@@ -48,7 +49,7 @@ class MessageProvider extends BaseChangeNotifier {
     var nickname = vTalkProvider.nickname;
     textEditingController.clear();
     String assembled = Emoji.assemble([Emojis.man, Emojis.man, Emojis.girl, Emojis.boy]);
-    Message data = VTalkSocketClient.client.sendMessage(message);
+    Message data = VTalkWebSocket.client.sendMessage(message);
     data.nickname = nickname;
     messages.insert(0, data);
     notifyListeners();

@@ -152,6 +152,7 @@ class _InputBar extends StatelessWidget {
                   child: TextField(
                     controller: provider.textEditingController,
                     maxLines: 3,
+                    minLines: 1,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(
@@ -246,6 +247,7 @@ class _EmojiPanel extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 8)
           ],
         );
       },
