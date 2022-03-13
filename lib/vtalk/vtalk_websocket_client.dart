@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
@@ -26,25 +28,29 @@ class VTalkWebSocket{
 
 
   bool isConnecting = false;
-  Future<bool> connect(String host, int port) async {
+  Future connect(String host, int port) async {
     if(isConnecting){
       return false;
     }
     isConnecting = true;
     this.host = host;
     this.port = port;
+    final completer = Completer.sync();
     try{
       channel = IOWebSocketChannel.connect("ws://$host:$port",
           pingInterval: const Duration(seconds: 10));
+      channel?.stream.listen((msg) {
+        _onMessageReceive(msg);
+      });
+      _updateConnectState(true);
+      isConnecting = false;
+      completer.complete(true);
     }catch(e){
       print('链接错误');
+      completer.completeError(false);
     }
-    channel?.stream.listen((msg) {
-      _onMessageReceive(msg);
-    });
-    _updateConnectState(true);
     isConnecting = false;
-    return channel != null;
+    return completer.future;
   }
 
   void _onMessageReceive(String msg) {

@@ -7,9 +7,12 @@ class VTalkProvider extends BaseChangeNotifier{
   String nickname = '';
 
   Future<bool> connect(String host , String port, String nickname) async {
-    var connectFuture = VTalkWebSocket.client.connect(host , int.parse(port));
+    final connectFuture = await VTalkWebSocket.client.connect(host , int.parse(port));
     this.nickname = nickname;
-    VTalkWebSocket.client.login(nickname);
+    print("-----------------$connectFuture");
+    if(connectFuture){
+      VTalkWebSocket.client.login(nickname);
+    }
     return connectFuture;
   }
 
