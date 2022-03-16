@@ -19,30 +19,31 @@ class MessagePage extends StatelessWidget {
         body: Column(
           children: [
             Selector<MessageProvider, bool>(
-                selector: (_, provider) => provider.connected,
-                shouldRebuild: (pre, curr) => pre != curr,
-                builder: (context, connecting, child) {
-                  return Visibility(
-                    visible: !connecting,
-                    child: GestureDetector(
-                      onTap: () {
-                        context.read<VTalkProvider>().reconnect();
-                      },
-                      child: Container(
-                        color: Colors.redAccent.withAlpha(128),
-                        constraints: const BoxConstraints(
-                          minWidth: double.infinity,
-                          maxWidth: double.infinity,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 6,
-                          horizontal: 8,
-                        ),
-                        child: const Text('你已经断开链接'),
+              selector: (_, provider) => provider.connected,
+              shouldRebuild: (pre, curr) => pre != curr,
+              builder: (context, connecting, child) {
+                return Visibility(
+                  visible: !connecting,
+                  child: GestureDetector(
+                    onTap: () {
+                      context.read<VTalkProvider>().reconnect();
+                    },
+                    child: Container(
+                      color: Colors.redAccent.withAlpha(128),
+                      constraints: const BoxConstraints(
+                        minWidth: double.infinity,
+                        maxWidth: double.infinity,
                       ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 8,
+                      ),
+                      child: const Text('你已经断开链接'),
                     ),
-                  );
-                }),
+                  ),
+                );
+              },
+            ),
             Expanded(
               child: Selector<MessageProvider, List<Message>>(
                 selector: (_, provider) => provider.messages,
@@ -51,7 +52,9 @@ class MessagePage extends StatelessWidget {
                   return ListView.separated(
                     reverse: true,
                     controller:
-                        context.read<MessageProvider>().scrollController,
+                    context
+                        .read<MessageProvider>()
+                        .scrollController,
                     itemCount: messages.length,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -204,8 +207,9 @@ class _EmojiPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var provider = context.read<MessageProvider>();
-    return Selector<MessageProvider, Pair<int ,List<IconData>>>(
-      selector: (_, provider) => Pair(provider.displayPanelIndex , provider.extendPanel),
+    return Selector<MessageProvider, Pair<int, List<IconData>>>(
+      selector: (_, provider) =>
+          Pair(provider.displayPanelIndex, provider.extendPanel),
       shouldRebuild: (pre, curr) => pre != curr,
       builder: (context, pair, child) {
         int displayIndex = pair.first;
@@ -224,7 +228,7 @@ class _EmojiPanel extends StatelessWidget {
                 itemCount: icons.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       provider.changePanelVisibleState(index);
                     },
                     child: Icon(

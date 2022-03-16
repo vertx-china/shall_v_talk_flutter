@@ -1,17 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
-import 'package:date_format/date_format.dart';
+import 'package:shall_v_talk_flutter/vtalk/message_enum.dart';
+import 'package:shall_v_talk_flutter/vtalk/vtalk_client.dart';
 
-class VTalkSocketClient {
-  static late final VTalkSocketClient client = VTalkSocketClient._internal();
-
+class VTalkSocketClient extends VTalkClient {
   Socket? _socket;
   String? _socketId;
   String nickname = '';
@@ -22,7 +21,7 @@ class VTalkSocketClient {
   int commandTime = 15;
   bool connected = false;
 
-  void _updateConnectState(bool connected){
+  void _updateConnectState(bool connected) {
     this.connected = connected;
     print('connected==$connected');
     _notifyConnectStateChange(connected);
@@ -34,11 +33,11 @@ class VTalkSocketClient {
   final List<ValueChanged<Message>> _messageReceiveCallback = [];
   final List<ValueChanged<bool>> _connectStateChangeCallback = [];
 
-  VTalkSocketClient._internal();
-
   bool isConnecting = false;
+
+  @override
   Future<bool> connect(String host, int port) async {
-    if(isConnecting){
+    if (isConnecting) {
       return false;
     }
     isConnecting = true;
@@ -79,7 +78,6 @@ class VTalkSocketClient {
       var result = await Connectivity().checkConnectivity();
       if (result != ConnectivityResult.mobile &&
           result != ConnectivityResult.wifi) {
-
         _updateConnectState(false);
         timer.cancel();
       } else {
@@ -95,30 +93,54 @@ class VTalkSocketClient {
     });
   }
 
+  @override
   void dispose() {
     _socket?.close();
     _socket = null;
   }
 
+  @override
   void addNicknamesChangeCallback(ValueChanged<List<String>> callback) {
     _nicknamesChangeCallback.add(callback);
   }
 
+  @override
   void addMessageReceiveCallback(ValueChanged<Message> callback) {
     _messageReceiveCallback.add(callback);
   }
+
+  @override
   void addConnectStateChangeCallback(ValueChanged<bool> callback) {
     _connectStateChangeCallback.add(callback);
     callback.call(connected);
+  }
+
+  @override
+  void removeNicknamesChangeCallback(ValueChanged<List<String>> callback) {
+    _nicknamesChangeCallback.remove(callback);
+  }
+
+  @override
+  void removeMessageReceiveCallback(ValueChanged<Message> callback) {
+    _messageReceiveCallback.remove(callback);
+  }
+
+  @override
+  void removeConnectStateChangeCallback(ValueChanged<bool> callback) {
+    _connectStateChangeCallback.remove(callback);
   }
 
   void _write(String data) {
     _socket?.write(data + "\r\n");
   }
 
-  Message sendMessage(String message) {
-    Map<String, String> data = {
-      'message': message,
+  @override
+  Message sendTextMessage(String message) {
+    Map<String, dynamic> data = {
+      'message': {
+        "type": MessageEnum.text.value,
+        "content": message,
+      },
     };
     _write(jsonEncode(data));
 
@@ -186,12 +208,14 @@ class VTalkSocketClient {
       element.call(message);
     }
   }
+
   void _notifyConnectStateChange(bool connectState) {
     for (var element in _connectStateChangeCallback) {
       element.call(connectState);
     }
   }
 
+  @override
   void login(String nickname) {
     this.nickname = nickname;
     Map<String, String> data = {

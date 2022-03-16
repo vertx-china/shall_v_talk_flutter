@@ -1,18 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
+import 'package:shall_v_talk_flutter/vtalk/message_enum.dart';
+import 'package:shall_v_talk_flutter/vtalk/vtalk_client.dart';
 import 'package:web_socket_channel/io.dart';
 
-class VTalkWebSocket{
-
-  static late final VTalkWebSocket client = VTalkWebSocket._internal();
-
-  VTalkWebSocket._internal();
-
+class VTalkWebSocket extends VTalkClient {
   String? host;
   int? port;
   String? _socketId;
@@ -26,17 +22,18 @@ class VTalkWebSocket{
   final List<ValueChanged<Message>> _messageReceiveCallback = [];
   final List<ValueChanged<bool>> _connectStateChangeCallback = [];
 
-
   bool isConnecting = false;
-  Future connect(String host, int port) async {
-    if(isConnecting){
+
+  @override
+  Future<bool> connect(String host, int port) async {
+    if (isConnecting) {
       return false;
     }
     isConnecting = true;
     this.host = host;
     this.port = port;
-    final completer = Completer.sync();
-    try{
+    final completer = Completer<bool>.sync();
+    try {
       channel = IOWebSocketChannel.connect("ws://$host:$port",
           pingInterval: const Duration(seconds: 10));
       channel?.stream.listen((msg) {
@@ -45,7 +42,7 @@ class VTalkWebSocket{
       _updateConnectState(true);
       isConnecting = false;
       completer.complete(true);
-    }catch(e){
+    } catch (e) {
       print('链接错误');
       completer.completeError(false);
     }
@@ -66,7 +63,7 @@ class VTalkWebSocket{
           _socketId = map['id'];
         } else if (map['nicknames'] != null && map.length == 1) {
           List<String> nicknames =
-          (map['nicknames'] as List).map((e) => e.toString()).toList();
+              (map['nicknames'] as List).map((e) => e.toString()).toList();
           _notifyNicknamesChange(nicknames);
         } else {
           var message = Message.fromJson(map);
@@ -87,25 +84,45 @@ class VTalkWebSocket{
       element.call(message);
     }
   }
+
   void _notifyConnectStateChange(bool connectState) {
     for (var element in _connectStateChangeCallback) {
       element.call(connectState);
     }
   }
 
+  @override
   void addNicknamesChangeCallback(ValueChanged<List<String>> callback) {
     _nicknamesChangeCallback.add(callback);
   }
 
+  @override
   void addMessageReceiveCallback(ValueChanged<Message> callback) {
     _messageReceiveCallback.add(callback);
   }
+
+  @override
   void addConnectStateChangeCallback(ValueChanged<bool> callback) {
     _connectStateChangeCallback.add(callback);
     callback.call(connected);
   }
 
-  void _updateConnectState(bool connected){
+  @override
+  void removeNicknamesChangeCallback(ValueChanged<List<String>> callback) {
+    _nicknamesChangeCallback.remove(callback);
+  }
+
+  @override
+  void removeMessageReceiveCallback(ValueChanged<Message> callback) {
+    _messageReceiveCallback.remove(callback);
+  }
+
+  @override
+  void removeConnectStateChangeCallback(ValueChanged<bool> callback) {
+    _connectStateChangeCallback.remove(callback);
+  }
+
+  void _updateConnectState(bool connected) {
     this.connected = connected;
     print('connected==$connected');
     _notifyConnectStateChange(connected);
@@ -115,9 +132,13 @@ class VTalkWebSocket{
     channel?.sink.add(data + "\r\n");
   }
 
-  Message sendMessage(String message) {
-    Map<String, String> data = {
-      'message': message,
+  @override
+  Message sendTextMessage(String message) {
+    Map<String, dynamic> data = {
+      'message': {
+        "type": MessageEnum.text.value,
+        "content": message,
+      },
     };
     _write(jsonEncode(data));
 
@@ -145,6 +166,7 @@ class VTalkWebSocket{
     );
   }
 
+  @override
   void login(String nickname) {
     this.nickname = nickname;
     Map<String, String> data = {
@@ -153,9 +175,9 @@ class VTalkWebSocket{
     _write(jsonEncode(data));
   }
 
+  @override
   void dispose() {
     channel?.sink.close();
     channel = null;
   }
-
 }

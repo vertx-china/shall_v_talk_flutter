@@ -1,35 +1,36 @@
 import 'package:shall_v_talk_flutter/base/base_change_notifier.dart';
-import 'package:shall_v_talk_flutter/vtalk/vtalk_socket_client.dart';
+import 'package:shall_v_talk_flutter/vtalk/vtalk_client.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_websocket_client.dart';
 
 class VTalkProvider extends BaseChangeNotifier{
 
   String nickname = '';
 
-  Future<bool> connect(String host , String port, String nickname) async {
-    final connectFuture = await VTalkWebSocket.client.connect(host , int.parse(port));
+  VTalkClient? _client;
+
+  VTalkClient get client {
+    return _client ??= VTalkWebSocket();
+  }
+
+  Future<bool> connect(String host, String port, String nickname) async {
+    final connectFuture = await client.connect(host, int.parse(port));
     this.nickname = nickname;
     print("-----------------$connectFuture");
-    if(connectFuture){
-      VTalkWebSocket.client.login(nickname);
+    if (connectFuture) {
+      client.login(nickname);
     }
     return connectFuture;
   }
 
   Future<void> reconnect() async {
-    // VTalkWebSocket.client.reconnect();
-    VTalkWebSocket.client.login(nickname);
+    client.login(nickname);
   }
 
 
 
   @override
   void dispose() {
-    VTalkWebSocket.client.dispose();
+    client.dispose();
     super.dispose();
-  }
-
-  void showConnectDialog() {
-
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/extension/extension_index.dart';
+import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/module/message/picture_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,7 +31,7 @@ class MessageItem extends StatelessWidget {
           const SizedBox(
             height: 4,
           ),
-          //服务端是这么定的。。。实际上message应该不太可能包含多个消息
+          //服务端是这么定的。。。实际上message应该不太可能包含多个消息?
           message.message is List
               ? Column(
                   mainAxisSize: MainAxisSize.min,

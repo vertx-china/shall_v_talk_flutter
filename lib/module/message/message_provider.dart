@@ -1,12 +1,9 @@
 import 'package:emojis/emoji.dart';
-import 'package:emojis/emojis.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/base/base_change_notifier.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
-import 'package:shall_v_talk_flutter/vtalk/vtalk_socket_client.dart';
-import 'package:shall_v_talk_flutter/vtalk/vtalk_websocket_client.dart';
 
 class MessageProvider extends BaseChangeNotifier {
   final TextEditingController textEditingController = TextEditingController();
@@ -25,8 +22,9 @@ class MessageProvider extends BaseChangeNotifier {
   }
 
   void _initCallback() {
-    VTalkWebSocket.client.addMessageReceiveCallback(_onMessageReceive);
-    VTalkWebSocket.client.addConnectStateChangeCallback(_onConnectStateChange);
+    var vTalkProvider = context.read<VTalkProvider>();
+    vTalkProvider.client.addMessageReceiveCallback(_onMessageReceive);
+    vTalkProvider.client.addConnectStateChangeCallback(_onConnectStateChange);
   }
 
   void _onMessageReceive(Message message) {
@@ -48,19 +46,27 @@ class MessageProvider extends BaseChangeNotifier {
     var vTalkProvider = context.read<VTalkProvider>();
     var nickname = vTalkProvider.nickname;
     textEditingController.clear();
-    String assembled = Emoji.assemble([Emojis.man, Emojis.man, Emojis.girl, Emojis.boy]);
-    Message data = VTalkWebSocket.client.sendMessage(message);
+    Message data = vTalkProvider.client.sendTextMessage(message);
     data.nickname = nickname;
     messages.insert(0, data);
     notifyListeners();
   }
 
   void changePanelVisibleState(int index) {
-    if(displayPanelIndex == index){
+    if (displayPanelIndex == index) {
       displayPanelIndex = -1;
-    }else{
+    } else {
       displayPanelIndex = index;
     }
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    var vTalkProvider = context.read<VTalkProvider>();
+    vTalkProvider.client.removeMessageReceiveCallback(_onMessageReceive);
+    vTalkProvider.client
+        .removeConnectStateChangeCallback(_onConnectStateChange);
+    super.dispose();
   }
 }
