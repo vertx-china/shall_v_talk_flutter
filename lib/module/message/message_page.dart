@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/module/message/emoji_page_view.dart';
 import 'package:shall_v_talk_flutter/module/message/message_item.dart';
-import 'package:shall_v_talk_flutter/module/message/message_provider.dart';
+import 'package:shall_v_talk_flutter/module/message/provider/message_provider.dart';
 import 'package:shall_v_talk_flutter/utils/pair.dart';
 import 'package:shall_v_talk_flutter/vtalk/vtalk_provider.dart';
 
@@ -12,10 +14,23 @@ class MessagePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile = Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
     return ChangeNotifierProvider(
       create: (c) => MessageProvider(context),
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: isMobile  ?AppBar(
+          centerTitle: true,
+          title: Selector<MessageProvider, List<String>>(
+            selector: (_, provider) => provider.users,
+            shouldRebuild: (pre, curr) => pre != curr,
+            builder: (context, users, child) {
+              return Text(
+                'Online(${users.length})',
+                style: const TextStyle(color: Colors.white),
+              );
+            },
+          ),
+        ): null,
         body: Column(
           children: [
             Selector<MessageProvider, bool>(
@@ -52,12 +67,10 @@ class MessagePage extends StatelessWidget {
                   return ListView.separated(
                     reverse: true,
                     controller:
-                    context
-                        .read<MessageProvider>()
-                        .scrollController,
+                        context.read<MessageProvider>().scrollController,
                     itemCount: messages.length,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
+                      horizontal: 16,
                       vertical: 16,
                     ),
                     itemBuilder: (context, index) {
@@ -74,47 +87,7 @@ class MessagePage extends StatelessWidget {
                             m1 is String &&
                             m1 == m2;
                       }
-                      Widget child = MessageItem(message: message);
-                      if (seconded) {
-                        child = Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            child,
-                            const SizedBox(width: 4),
-                            GestureDetector(
-                              onTap: () {
-                                context
-                                    .read<MessageProvider>()
-                                    .sendMessage(message.message);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    width: 1,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                                width: 20,
-                                height: 20,
-                                child: Center(
-                                  child: Text(
-                                    '+1',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 12,
-                                      height: 1,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                      return child;
+                      return MessageItem(message: message , seconded:seconded,);
                     },
                     separatorBuilder: (context, index) {
                       return const SizedBox(height: 16);
@@ -220,8 +193,6 @@ class _EmojiPanel extends StatelessWidget {
               height: 30,
               child: ListView.builder(
                 padding: const EdgeInsets.only(
-                  left: 16,
-                  right: 16,
                   bottom: 16,
                 ),
                 scrollDirection: Axis.horizontal,

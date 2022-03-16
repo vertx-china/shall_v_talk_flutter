@@ -1,55 +1,197 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/extension/extension_index.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/module/message/picture_page.dart';
+import 'package:shall_v_talk_flutter/module/message/provider/message_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MessageItem extends StatelessWidget {
   final Message message;
+  final bool seconded;
 
   const MessageItem({
     Key? key,
     required this.message,
+    this.seconded = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: message.isLocal ? Alignment.topRight : Alignment.topLeft,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment:
-            message.isLocal ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+    Widget child = message.message is List
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: (message.message as List)
+                .map(
+                  (e) => _MessageContent(
+                    message: e,
+                    isLocal: message.isLocal,
+                  ),
+                )
+                .toList(),
+          )
+        : _MessageContent(
+            message: message.message,
+            isLocal: message.isLocal,
+          );
+
+    if (message.isLocal) {
+      return _SelfContainer(
+        message: message,
+        child: child,
+      );
+    } else {
+      return _OtherContainer(
+        message: message,
+        child: child,
+      );
+    }
+  }
+}
+
+class _SelfContainer extends StatelessWidget {
+  final Message message;
+  final Widget child;
+
+  const _SelfContainer({
+    Key? key,
+    required this.message,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              message.nickname ?? '',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            child,
+          ],
+        ),
+        const SizedBox(width: 8),
+        _UserAvatar(name: message.nickname ?? ' '),
+      ],
+    );
+  }
+}
+
+class _OtherContainer extends StatelessWidget {
+  final Message message;
+  final Widget child;
+  final bool seconded;
+
+  const _OtherContainer({
+    Key? key,
+    required this.message,
+    required this.child,
+    this.seconded = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Widget content = child;
+    if (seconded) {
+      content = Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(
-            message.nickname ?? '',
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
+          child,
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: () {
+              context.read<MessageProvider>().sendMessage(message.message);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(
+                  width: 1,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              width: 20,
+              height: 20,
+              child: Center(
+                child: Text(
+                  '+1',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 12,
+                    height: 1,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ),
-          const SizedBox(
-            height: 4,
-          ),
-          //服务端是这么定的。。。实际上message应该不太可能包含多个消息?
-          message.message is List
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: (message.message as List)
-                      .map(
-                        (e) => _MessageContent(
-                          message: e,
-                          isLocal: message.isLocal,
-                        ),
-                      )
-                      .toList(),
-                )
-              : _MessageContent(
-                  message: message.message,
-                  isLocal: message.isLocal,
-                ),
         ],
+      );
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _UserAvatar(name: message.nickname ?? ' '),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message.nickname ?? '',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            content,
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _UserAvatar extends StatelessWidget {
+  final String name;
+
+  const _UserAvatar({
+    Key? key,
+    required this.name,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: 20,
+      child: SizedBox(
+        width: 20,
+        height: 20,
+        child: Center(
+          child: Text(
+            name.substring(0, 1),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
+      backgroundColor: Colors.lightBlueAccent.withAlpha(126),
     );
   }
 }

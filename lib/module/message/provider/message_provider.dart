@@ -9,6 +9,7 @@ class MessageProvider extends BaseChangeNotifier {
   final TextEditingController textEditingController = TextEditingController();
   final ScrollController scrollController = ScrollController();
   final List<Message> messages = [];
+  List<String> users = [];
   final BuildContext context;
   bool connected = false;
 
@@ -25,6 +26,7 @@ class MessageProvider extends BaseChangeNotifier {
     var vTalkProvider = context.read<VTalkProvider>();
     vTalkProvider.client.addMessageReceiveCallback(_onMessageReceive);
     vTalkProvider.client.addConnectStateChangeCallback(_onConnectStateChange);
+    vTalkProvider.client.addNicknamesChangeCallback(_onNicknameChange);
   }
 
   void _onMessageReceive(Message message) {
@@ -34,6 +36,11 @@ class MessageProvider extends BaseChangeNotifier {
 
   void _onConnectStateChange(bool connected){
     this.connected = connected;
+    notifyListeners();
+  }
+
+  void _onNicknameChange(List<String> nicknames){
+    users = nicknames;
     notifyListeners();
   }
 
@@ -65,8 +72,8 @@ class MessageProvider extends BaseChangeNotifier {
   void dispose() {
     var vTalkProvider = context.read<VTalkProvider>();
     vTalkProvider.client.removeMessageReceiveCallback(_onMessageReceive);
-    vTalkProvider.client
-        .removeConnectStateChangeCallback(_onConnectStateChange);
+    vTalkProvider.client.removeConnectStateChangeCallback(_onConnectStateChange);
+    vTalkProvider.client.removeNicknamesChangeCallback(_onNicknameChange);
     super.dispose();
   }
 }
