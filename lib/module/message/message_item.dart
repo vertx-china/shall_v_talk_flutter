@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/extension/extension_index.dart';
 import 'package:shall_v_talk_flutter/model/message.dart';
 import 'package:shall_v_talk_flutter/module/message/picture_page.dart';
 import 'package:shall_v_talk_flutter/module/message/provider/message_provider.dart';
+import 'package:shall_v_talk_flutter/vtalk/message_enum.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MessageItem extends StatelessWidget {
@@ -20,20 +23,20 @@ class MessageItem extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget child = message.message is List
         ? Column(
-            mainAxisSize: MainAxisSize.min,
-            children: (message.message as List)
-                .map(
-                  (e) => _MessageContent(
-                    message: e,
-                    isLocal: message.isLocal,
-                  ),
-                )
-                .toList(),
-          )
+      mainAxisSize: MainAxisSize.min,
+      children: (message.message as List)
+          .map(
+            (e) => _MessageContent(
+          message: e,
+          isLocal: message.isLocal,
+        ),
+      )
+          .toList(),
+    )
         : _MessageContent(
-            message: message.message,
-            isLocal: message.isLocal,
-          );
+      message: message.message,
+      isLocal: message.isLocal,
+    );
 
     if (message.isLocal) {
       return _SelfContainer(
@@ -213,10 +216,14 @@ class _MessageContent extends StatelessWidget {
       child = _ImageUrlContent(url: message);
     } else if (message is Map) {
       String type = message['type']?.toString() ?? '0';
-      //只支持url
-      if (type == 'img' && message['img'] != null) {
-        child = _ImageUrlContent(url: message['img']);
-      } else if (type == 'link') {
+      if (MessageEnum.isImage(type) && message['url'] != null) {
+        child = _ImageUrlContent(url: message['url']);
+      } else if (MessageEnum.isImage(type) && message['base64'] != null) {
+        List<String> captchaCode = message['base64'].split(',');
+        String base64 =
+            captchaCode.length > 1 ? captchaCode[1] : captchaCode[0];
+        child = _ImageBase64Content(base64: base64);
+      } else if (MessageEnum.isLink(type)) {
         child = _TextContent(text: message['url']?.toString() ?? '');
       } else {
         child = _TextContent(text: message?.toString() ?? '');
@@ -308,6 +315,45 @@ class _ImageUrlContent extends StatelessWidget {
           ),
           child: Image.network(
             url,
+            alignment: Alignment.topCenter,
+            cacheWidth: 0.7.widthPercent(context).toInt(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageBase64Content extends StatelessWidget {
+  final String base64;
+
+  const _ImageBase64Content({
+    Key? key,
+    required this.base64,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 6,
+        horizontal: 6,
+      ),
+      child: GestureDetector(
+        onTap: () {
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (c) => PicturePage(url: url),
+          //   ),
+          // );
+        },
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: 200,
+            maxWidth: 0.7.widthPercent(context),
+          ),
+          child: Image.memory(
+            const Base64Decoder().convert(base64),
             alignment: Alignment.topCenter,
             cacheWidth: 0.7.widthPercent(context).toInt(),
           ),

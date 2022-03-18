@@ -138,7 +138,7 @@ class VTalkSocketClient extends VTalkClient {
   Message sendTextMessage(String message) {
     Map<String, dynamic> data = {
       'message': {
-        "type": MessageEnum.text.value,
+        "type": MessageEnum.text.value.first,
         "content": message,
       },
     };
