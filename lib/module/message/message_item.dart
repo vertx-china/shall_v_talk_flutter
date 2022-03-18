@@ -190,6 +190,8 @@ class _UserAvatar extends StatelessWidget {
             name.substring(0, 1),
             style: const TextStyle(
               color: Colors.white,
+              fontSize: 18,
+              height: 1,
             ),
           ),
         ),
@@ -215,8 +217,10 @@ class _MessageContent extends StatelessWidget {
     if (message is String && (message as String).isPhotoUrl()) {
       child = _ImageUrlContent(url: message);
     } else if (message is Map) {
-      String type = message['type']?.toString() ?? '0';
-      if (MessageEnum.isImage(type) && message['url'] != null) {
+      dynamic type = message['type'] ?? 0;
+      if(MessageEnum.isText(type)){
+        child = _TextContent(text: message['content']);
+      }else if (MessageEnum.isImage(type) && message['url'] != null) {
         child = _ImageUrlContent(url: message['url']);
       } else if (MessageEnum.isImage(type) && message['base64'] != null) {
         List<String> captchaCode = message['base64'].split(',');
