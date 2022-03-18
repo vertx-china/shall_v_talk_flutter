@@ -1,7 +1,7 @@
 # window.yml
 
 # 工作流程的名字
-name: Build Window Product
+name: Build Android Product
 
 # 工作流程触发的时机，这里是当一个版本标签推送到仓库时触发
 on:
@@ -19,10 +19,9 @@ jobs:
         with:
           flutter-version: '2.10.x'
           channel: 'stable'
-      - run: flutter build windows
-      - run: tar -cvzf archive.tar "build/windows/runner/Release"
+      - run: flutter build apk --obfuscate --split-debug-info=./symbols
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
-          name: upload-window-product
-          path: archive.tar
+          name: upload-android-product
+          path: build/app/outputs/flutter-apk/app-release.apk
