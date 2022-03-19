@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shall_v_talk_flutter/extension/extension_index.dart';
@@ -23,20 +24,20 @@ class MessageItem extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget child = message.message is List
         ? Column(
-      mainAxisSize: MainAxisSize.min,
-      children: (message.message as List)
-          .map(
-            (e) => _MessageContent(
-          message: e,
-          isLocal: message.isLocal,
-        ),
-      )
-          .toList(),
-    )
+            mainAxisSize: MainAxisSize.min,
+            children: (message.message as List)
+                .map(
+                  (e) => _MessageContent(
+                    message: e,
+                    isLocal: message.isLocal,
+                  ),
+                )
+                .toList(),
+          )
         : _MessageContent(
-      message: message.message,
-      isLocal: message.isLocal,
-    );
+            message: message.message,
+            isLocal: message.isLocal,
+          );
 
     if (message.isLocal) {
       return _SelfContainer(
@@ -218,9 +219,9 @@ class _MessageContent extends StatelessWidget {
       child = _ImageUrlContent(url: message);
     } else if (message is Map) {
       dynamic type = message['type'] ?? 0;
-      if(MessageEnum.isText(type)){
+      if (MessageEnum.isText(type)) {
         child = _TextContent(text: message['content']);
-      }else if (MessageEnum.isImage(type) && message['url'] != null) {
+      } else if (MessageEnum.isImage(type) && message['url'] != null) {
         child = _ImageUrlContent(url: message['url']);
       } else if (MessageEnum.isImage(type) && message['base64'] != null) {
         List<String> captchaCode = message['base64'].split(',');
@@ -246,7 +247,7 @@ class _MessageContent extends StatelessWidget {
           bottomLeft: const Radius.circular(6),
           bottomRight: const Radius.circular(6),
         ),
-        color: (isLocal ? Colors.blue : Colors.green).withAlpha(80),
+        color: isLocal ? Colors.green.withAlpha(80) : Colors.white,
       ),
       child: child,
     );
@@ -299,6 +300,7 @@ class _ImageUrlContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 6,
@@ -317,10 +319,10 @@ class _ImageUrlContent extends StatelessWidget {
             maxHeight: 200,
             maxWidth: 0.7.widthPercent(context),
           ),
-          child: Image.network(
-            url,
+          child: CachedNetworkImage(
+            imageUrl: url,
             alignment: Alignment.topCenter,
-            cacheWidth: 0.7.widthPercent(context).toInt(),
+            memCacheWidth: 0.7.widthPercent(context).toInt(),
           ),
         ),
       ),
