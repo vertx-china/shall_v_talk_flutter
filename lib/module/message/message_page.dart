@@ -18,19 +18,21 @@ class MessagePage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (c) => MessageProvider(context),
       child: Scaffold(
-        appBar: isMobile  ?AppBar(
-          centerTitle: true,
-          title: Selector<MessageProvider, List<String>>(
-            selector: (_, provider) => provider.users,
-            shouldRebuild: (pre, curr) => pre != curr,
-            builder: (context, users, child) {
-              return Text(
-                'Online(${users.length})',
-                style: const TextStyle(color: Colors.white),
-              );
-            },
-          ),
-        ): null,
+        appBar: isMobile
+            ? AppBar(
+                centerTitle: true,
+                title: Selector<MessageProvider, List<String>>(
+                  selector: (_, provider) => provider.users,
+                  shouldRebuild: (pre, curr) => pre != curr,
+                  builder: (context, users, child) {
+                    return Text(
+                      'Online(${users.length})',
+                      style: const TextStyle(color: Colors.white),
+                    );
+                  },
+                ),
+              )
+            : null,
         body: Column(
           children: [
             Selector<MessageProvider, bool>(
@@ -87,7 +89,10 @@ class MessagePage extends StatelessWidget {
                             m1 is String &&
                             m1 == m2;
                       }
-                      return MessageItem(message: message , seconded:seconded,);
+                      return MessageItem(
+                        message: message,
+                        seconded: seconded,
+                      );
                     },
                     separatorBuilder: (context, index) {
                       return const SizedBox(height: 16);
@@ -194,6 +199,8 @@ class _EmojiPanel extends StatelessWidget {
               child: ListView.builder(
                 padding: const EdgeInsets.only(
                   bottom: 16,
+                  left: 16,
+                  right: 16,
                 ),
                 scrollDirection: Axis.horizontal,
                 itemCount: icons.length,
