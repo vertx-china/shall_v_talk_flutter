@@ -1,3 +1,5 @@
+import 'package:date_format/date_format.dart';
+
 class Message {
   String? id;
   dynamic message;
@@ -6,6 +8,7 @@ class Message {
   String? time;
   int? timestamp;
   late bool isLocal;
+  String? formatTime;
 
   Message({
     this.id,
@@ -15,6 +18,7 @@ class Message {
     this.time,
     this.timestamp,
     this.isLocal = false,
+    this.formatTime = ''
   });
 
   Message.fromJson(Map<String, dynamic> json) {
@@ -25,6 +29,8 @@ class Message {
     time = json['time'];
     timestamp = json['timestamp'];
     isLocal = false;
+    var dateTime = DateTime.tryParse(time??"");
+    formatTime = "${dateTime?.month}-${dateTime?.day} ${dateTime?.hour}:${dateTime?.minute}";
   }
 
   Map<String, dynamic> toJson() {

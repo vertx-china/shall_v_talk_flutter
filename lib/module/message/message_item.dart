@@ -65,29 +65,35 @@ class _SelfContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        _TimeContent(time: message.formatTime??''),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              message.nickname ?? '',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  message.nickname ?? '',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                child,
+              ],
             ),
-            const SizedBox(
-              height: 4,
-            ),
-            child,
+            const SizedBox(width: 8),
+            _UserAvatar(name: message.nickname ?? ' '),
           ],
-        ),
-        const SizedBox(width: 8),
-        _UserAvatar(name: message.nickname ?? ' '),
-      ],
+        )
+      ]
     );
   }
 }
@@ -144,30 +150,34 @@ class _OtherContainer extends StatelessWidget {
         ],
       );
     }
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _UserAvatar(name: message.nickname ?? ' '),
-        const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              message.nickname ?? '',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+    return Column(children: [
+      _TimeContent(time: message.formatTime ?? ''),
+      const SizedBox(height: 16),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _UserAvatar(name: message.nickname ?? ' '),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                message.nickname ?? '',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 4,
-            ),
-            content,
-          ],
-        ),
-      ],
-    );
+              const SizedBox(
+                height: 4,
+              ),
+              content,
+            ],
+          ),
+        ],
+      ),
+    ]);
   }
 }
 
@@ -251,6 +261,20 @@ class _MessageContent extends StatelessWidget {
       ),
       child: child,
     );
+  }
+}
+
+class _TimeContent extends StatelessWidget {
+  final String time;
+
+  const _TimeContent({Key? key, required this.time}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+        child: Text(time,
+            style: const TextStyle(fontSize: 12, color: Colors.grey)));
   }
 }
 

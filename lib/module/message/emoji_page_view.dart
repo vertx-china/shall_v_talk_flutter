@@ -1,5 +1,4 @@
 import 'package:emojis/emoji.dart';
-import 'package:emojis/emojis.dart';
 import 'package:flutter/material.dart';
 
 class EmojiPageView extends StatelessWidget {

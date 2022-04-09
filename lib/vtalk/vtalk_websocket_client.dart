@@ -162,6 +162,7 @@ class VTalkWebSocket extends VTalkClient {
         ' ',
         'z'
       ]),
+      formatTime: "${now.month}-${now.day} ${now.hour}:${now.minute}",
       isLocal: true,
     );
   }
