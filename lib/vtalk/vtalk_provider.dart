@@ -15,7 +15,6 @@ class VTalkProvider extends BaseChangeNotifier{
   Future<bool> connect(String host, String port, String nickname) async {
     final connectFuture = await client.connect(host, int.parse(port));
     this.nickname = nickname;
-    print("-----------------$connectFuture");
     if (connectFuture) {
       client.login(nickname);
     }

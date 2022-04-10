@@ -67,8 +67,11 @@ class _SelfContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _TimeContent(time: message.formatTime??''),
-        const SizedBox(height: 16),
+      if ((message.formatTime ?? '').isNotEmpty)
+        _TimeContent(time: message.formatTime ?? '')
+      else
+        Container(),
+      const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +154,10 @@ class _OtherContainer extends StatelessWidget {
       );
     }
     return Column(children: [
-      _TimeContent(time: message.formatTime ?? ''),
+      if ((message.formatTime ?? '').isNotEmpty)
+        _TimeContent(time: message.formatTime ?? '')
+      else
+        Container(),
       const SizedBox(height: 16),
       Row(
         mainAxisAlignment: MainAxisAlignment.start,

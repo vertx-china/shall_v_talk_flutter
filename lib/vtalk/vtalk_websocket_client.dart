@@ -15,6 +15,7 @@ class VTalkWebSocket extends VTalkClient {
   IOWebSocketChannel? channel;
   String nickname = '';
   bool connected = false;
+  int messageLastTime = 0;
 
   String? get socketId => _socketId;
 
@@ -67,6 +68,13 @@ class VTalkWebSocket extends VTalkClient {
           _notifyNicknamesChange(nicknames);
         } else {
           var message = Message.fromJson(map);
+          int lastTime = message.timestamp ?? 0;
+          if (lastTime - messageLastTime > 180000) {
+            DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(message.timestamp ?? 0);
+            messageLastTime = dateTime.millisecondsSinceEpoch;
+            message.formatTime =
+                "${dateTime.month}-${dateTime.day} ${dateTime.hour}:${dateTime.minute}";
+          }
           _notifyMessageReceive(message);
         }
       } catch (e) {}
@@ -143,10 +151,15 @@ class VTalkWebSocket extends VTalkClient {
     _write(jsonEncode(data));
 
     var now = DateTime.now();
+    String formatTime = "";
+    if(now.millisecondsSinceEpoch - messageLastTime > 180000){
+      messageLastTime = now.millisecondsSinceEpoch;
+      formatTime = "${now.month}-${now.day} ${now.hour}:${now.minute}";
+    }
     return Message(
       id: _socketId,
       message: message,
-      timestamp: now.millisecondsSinceEpoch,
+      timestamp: messageLastTime,
       time: formatDate(now, [
         'yyyy',
         '-',
@@ -162,7 +175,7 @@ class VTalkWebSocket extends VTalkClient {
         ' ',
         'z'
       ]),
-      formatTime: "${now.month}-${now.day} ${now.hour}:${now.minute}",
+      formatTime: formatTime,
       isLocal: true,
     );
   }

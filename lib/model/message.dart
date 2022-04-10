@@ -29,8 +29,6 @@ class Message {
     time = json['time'];
     timestamp = json['timestamp'];
     isLocal = false;
-    var dateTime = DateTime.tryParse(time??"");
-    formatTime = "${dateTime?.month}-${dateTime?.day} ${dateTime?.hour}:${dateTime?.minute}";
   }
 
   Map<String, dynamic> toJson() {
